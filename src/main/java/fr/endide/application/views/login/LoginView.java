@@ -9,11 +9,13 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import fr.endide.application.data.entity.Student;
+import fr.endide.application.data.service.StudentRepository;
 
 @PageTitle("Login")
 @Route(value = "login")
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
-
+    StudentRepository repository;
     private final LoginForm login = new LoginForm();
 
     public LoginView(){
@@ -21,9 +23,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-
         login.setAction("login");
-
         add(new H1("Vaadin CRM"), login);
     }
 

@@ -71,7 +71,6 @@ public class ElevesView extends Div implements BeforeEnterObserver {
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("password").setAutoWidth(true);
         grid.setItems(query -> studentService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
