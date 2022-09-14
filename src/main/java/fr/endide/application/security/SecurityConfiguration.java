@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,13 +23,17 @@ import org.springframework.security.provisioning.UserDetailsManager;
 public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
 
     public static final String LOGOUT_URL = "/";
-
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsServiceImpl();
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         super.configure(http);
         setLoginView(http, LoginView.class, LOGOUT_URL);
 
@@ -61,14 +66,14 @@ public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
         super.configure(web);
     }
     @Bean
-    @Override
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password("$2a$12$QkcsWXBzjfXn/x/vmkudceaYOu2YBFcpRuXubIPd6iJFamHNEJNki")
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
-
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
+    }
 }

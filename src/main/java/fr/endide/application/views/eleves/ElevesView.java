@@ -30,7 +30,7 @@ import org.springframework.data.domain.PageRequest;
 
 @PageTitle("Eleves")
 @Route(value = "eleves/:studentID?/:action?(edit)", layout = MainLayout.class)
-@RolesAllowed("USER")
+@RolesAllowed("ADMIN")
 public class ElevesView extends Div implements BeforeEnterObserver {
 
     private final String STUDENT_ID = "studentID";

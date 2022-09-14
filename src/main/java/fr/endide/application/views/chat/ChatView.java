@@ -18,7 +18,7 @@ import javax.annotation.security.RolesAllowed;
 @PageTitle("Chat")
 @Route(value = "chat", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
-@RolesAllowed("USER")
+@RolesAllowed({"ADMIN","USER"})
 
 public class ChatView extends VerticalLayout {
 

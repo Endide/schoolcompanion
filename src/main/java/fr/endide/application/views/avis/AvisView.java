@@ -8,10 +8,17 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import fr.endide.application.views.MainLayout;
 
-public class avisView extends Div {
+import javax.annotation.security.RolesAllowed;
+
+@PageTitle("Avis")
+@Route(value = "avis", layout = MainLayout.class)
+@RolesAllowed({"ADMIN","USER"})
+public class AvisView extends Div {
     private TextField question = new TextField("Votre Question ?");
     private TextField topic = new TextField("Nom du topic :");
     Checkbox checkbox = new Checkbox("Anonyme");
@@ -21,7 +28,7 @@ public class avisView extends Div {
         return new H3("Personal information");
     }
 
-    public avisView(){
+    public AvisView(){
 
         add(createTitle(), createFormLayout(), createButtonLayout());
     }

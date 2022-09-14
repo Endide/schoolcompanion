@@ -12,6 +12,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+import fr.endide.application.views.avis.AvisView;
 import fr.endide.application.views.chat.ChatView;
 import fr.endide.application.views.conseildeclasse.ConseilDeClasseView;
 import fr.endide.application.views.eleves.ElevesView;
@@ -110,6 +111,8 @@ public class MainLayout extends AppLayout {
                 new MenuItemInfo("Chat", "la la-comments", ChatView.class), //
 
                 new MenuItemInfo("Conseil De Classe", "la la-list", ConseilDeClasseView.class), //
+
+                new MenuItemInfo("Avis", "la la-paper-plane", AvisView.class), //
 
                 new MenuItemInfo("Mon Compte", "la la-user", MonCompteView.class), //
 

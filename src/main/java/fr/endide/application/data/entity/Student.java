@@ -1,17 +1,11 @@
 package fr.endide.application.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import fr.endide.application.data.Role;
-import java.util.Set;
+
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "students")
@@ -24,9 +18,7 @@ public class Student extends AbstractEntity {
     private String schoolLevel;
     @JsonIgnore
     private String hashedPassword;
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    private String role;
     @Lob
     @Column(length = 1000000)
     private byte[] profilePicture;
@@ -67,11 +59,11 @@ public class Student extends AbstractEntity {
     public void setHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
     }
-    public Set<Role> getRoles() {
-        return roles;
+    public String getRoles() {
+        return role;
     }
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRoles(String role) {
+        this.role = role;
     }
     public byte[] getProfilePicture() {
         return profilePicture;
