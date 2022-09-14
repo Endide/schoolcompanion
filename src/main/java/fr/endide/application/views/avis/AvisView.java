@@ -21,20 +21,18 @@ import javax.annotation.security.RolesAllowed;
 public class AvisView extends Div {
     private TextField question = new TextField("Votre Question ?");
     private TextField topic = new TextField("Nom du topic :");
-    Checkbox checkbox = new Checkbox("Anonyme");
     private Button send = new Button("Envoyer");
 
     private Component createTitle() {
         return new H3("Personal information");
     }
-
     public AvisView(){
 
         add(createTitle(), createFormLayout(), createButtonLayout());
     }
     private Component createFormLayout() {
         FormLayout formLayout = new FormLayout();
-        formLayout.add(question, topic, checkbox);
+        formLayout.add(question, topic);
         return formLayout;
     }
 
