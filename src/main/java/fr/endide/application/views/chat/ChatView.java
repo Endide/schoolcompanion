@@ -11,7 +11,13 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+import fr.endide.application.data.entity.Student;
+import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.views.MainLayout;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
 
@@ -21,14 +27,18 @@ import javax.annotation.security.RolesAllowed;
 @RolesAllowed({"ADMIN","USER"})
 
 public class ChatView extends VerticalLayout {
+    StudentRepository repository;
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentPrincipalName = authentication.getName();
 
+    @Autowired
     public ChatView() {
         addClassName("chat-view");
         setSpacing(false);
-        UserInfo userInfo = new UserInfo(UUID.randomUUID().toString(), "Steve Lange");
-
+        Student student = repository.findByEmail(currentPrincipalName);
+        UserInfo userInfo = new UserInfo(student.getId().toString(), student.getFirstName() + " " + student.getLastName(), "https://icon2.cleanpng.com/20180920/att/kisspng-user-logo-information-service-design-5ba34f886b6700.1362345615374293844399.jpg");
         // Tabs allow us to change chat rooms.
-        Tabs tabs = new Tabs(new Tab("#general"), new Tab("#support"), new Tab("#casual"));
+        Tabs tabs = new Tabs(new Tab("#classe"));
         tabs.setWidthFull();
 
         CollaborationMessageList list = new CollaborationMessageList(userInfo, "chat/#general");

@@ -26,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
+import java.util.List;
 
 @PageTitle("Mon Compte")
 @Route(value = "mon-compte", layout = MainLayout.class)
@@ -36,35 +38,44 @@ public class MonCompteView extends Div {
 
     private TextField firstName = new TextField("Prénom");
     private TextField lastName = new TextField("Nom de famille");
-    private EmailField email = new EmailField("Adresse Email");
     private PasswordField password = new PasswordField("Mot de Passe");
     private PasswordField repassword = new PasswordField("Retaper le Mot de Passe");
     private Button save = new Button("Save");
 
+    StudentRepository repository;
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentPrincipalName = authentication.getName();
+
     private Component createTitle() {
-        return new H3("Mon compte");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName().toString();
+        return new H3("Mon compte : " + currentPrincipalName);
     }
     @Autowired
-    private StudentRepository repository;
-    public MonCompteView(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        System.out.println(currentPrincipalName);
-        add(createTitle(), createFormLayout(), createButtonLayout());
-    }
-    private Component createFormLayout() {
-        FormLayout formLayout = new FormLayout();
-        email.setErrorMessage("Please enter a valid email address");
-        formLayout.add(firstName, lastName, email, password, repassword);
-        return formLayout;
-    }
-
-    private Component createButtonLayout() {
+    public MonCompteView(StudentRepository repository){
+        this.repository = repository;
+        Student student = repository.findByEmail(currentPrincipalName);
+        firstName.setValue(student.getFirstName());
+        lastName.setValue(student.getLastName());
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.addClassName("button-layout");
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        student.setFirstName(firstName.getValue());
+        student.setLastName(lastName.getValue());
+        save.addClickListener(event -> {
+            System.out.println(firstName.getValue());
+            repository.save(student);
+            Notification.show("Saved");
+        });
         buttonLayout.add(save);
-        return buttonLayout;
+        add(createTitle(), createFormLayout(), buttonLayout);
+    }
+
+
+    private Component createFormLayout() {
+        FormLayout formLayout = new FormLayout();
+        formLayout.add(firstName, lastName, password, repassword);
+        return formLayout;
     }
 
 }
