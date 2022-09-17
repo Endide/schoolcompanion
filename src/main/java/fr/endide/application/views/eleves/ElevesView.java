@@ -20,13 +20,22 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import fr.endide.application.data.entity.Student;
+import fr.endide.application.data.generator.passwordGenerator;
+import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.data.service.StudentService;
+import fr.endide.application.mail.mailManager;
 import fr.endide.application.views.MainLayout;
 import java.util.Optional;
 import java.util.UUID;
+import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
+
+import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @PageTitle("Eleves")
 @Route(value = "eleves/:studentID?/:action?(edit)", layout = MainLayout.class)
@@ -42,10 +51,9 @@ public class ElevesView extends Div implements BeforeEnterObserver {
     private TextField firstName;
     private TextField lastName;
     private TextField email;
-    private TextField password;
 
     private Button cancel = new Button("Cancel");
-    private Button save = new Button("Save");
+    private Button save = new Button("Create");
 
     private BeanValidationBinder<Student> binder;
 
@@ -76,16 +84,6 @@ public class ElevesView extends Div implements BeforeEnterObserver {
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-        // when a row is selected or deselected, populate form
-        grid.asSingleSelect().addValueChangeListener(event -> {
-            if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(STUDENT_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
-            } else {
-                clearForm();
-                UI.getCurrent().navigate(ElevesView.class);
-            }
-        });
-
         // Configure Form
         binder = new BeanValidationBinder<>(Student.class);
 
@@ -100,17 +98,36 @@ public class ElevesView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.student == null) {
-                    this.student = new Student();
+                if (studentService.exists(email.getValue())) {
+                    Notification.show("L'adresse email est déjà utilisée");
+                }else {
+                    Student newStudent = new Student();
+                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                    String currentPrincipalName = authentication.getName();
+                    Student currentStudent = studentService.getByEmail(currentPrincipalName);
+                    newStudent.setUsername(username.getValue());
+                    newStudent.setFirstName(firstName.getValue());
+                    newStudent.setLastName(lastName.getValue());
+                    newStudent.setEmail(email.getValue());
+                    newStudent.setRoles("ROLE_USER");
+                    newStudent.setSchoolLevel(currentStudent.getSchoolLevel());
+                    newStudent.setProfilePicture(null);
+                    String key = passwordGenerator.generateRandomSpecialCharacters(10);
+                    newStudent.setHashedPassword(new BCryptPasswordEncoder().encode(key));
+                    try {
+                        mailManager.sendMessage(key, email.getValue());
+                    } catch (EmailException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    studentService.update(newStudent);
+                    binder.writeBean(newStudent);
+                    clearForm();
+                    refreshGrid();
+                    Notification.show("Eleves créer un mail avec son mot de passe vient de lui être envoyé");
+                    UI.getCurrent().navigate(ElevesView.class);
                 }
-                binder.writeBean(this.student);
-                studentService.update(this.student);
-                clearForm();
-                refreshGrid();
-                Notification.show("Student details stored.");
-                UI.getCurrent().navigate(ElevesView.class);
-            } catch (ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the student details.");
+                } catch (ValidationException validationException) {
+                Notification.show("ERROR.");
             }
         });
 
@@ -147,8 +164,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
         firstName = new TextField("First Name");
         lastName = new TextField("Last Name");
         email = new TextField("Email");
-        password = new TextField("Password");
-        Component[] fields = new Component[]{username, firstName, lastName, email, password};
+        Component[] fields = new Component[]{username, firstName, lastName, email};
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -156,7 +172,6 @@ public class ElevesView extends Div implements BeforeEnterObserver {
 
         splitLayout.addToSecondary(editorLayoutDiv);
     }
-
     private void createButtonLayout(Div editorLayoutDiv) {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");

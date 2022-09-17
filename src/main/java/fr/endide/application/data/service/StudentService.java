@@ -22,6 +22,12 @@ public class StudentService {
     public Optional<Student> get(UUID id) {
         return repository.findById(id);
     }
+    public Student getByEmail(String email) {
+        return repository.findByEmail(email);
+    }
+    public boolean exists(String email) {
+        return repository.existsStudentByEmail(email);
+    }
 
     public Student update(Student entity) {
         return repository.save(entity);

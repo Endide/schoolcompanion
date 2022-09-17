@@ -1,9 +1,15 @@
 package fr.endide.application.data.entity;
 
-public class Message {
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "messages")
+public class Message extends AbstractEntity{
     String text;
     String topic;
-    Student author;
 
     public String getText() {
         return text;
@@ -16,11 +22,5 @@ public class Message {
     }
     public void setTopic(String topic) {
         this.topic = topic;
-    }
-    public Student getAuthor() {
-        return author;
-    }
-    public void setAuthor(Student author) {
-        this.author = author;
     }
 }

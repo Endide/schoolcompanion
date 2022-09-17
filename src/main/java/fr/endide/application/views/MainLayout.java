@@ -2,6 +2,8 @@ package fr.endide.application.views;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -10,14 +12,23 @@ import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+import fr.endide.application.data.entity.Student;
+import fr.endide.application.data.service.StudentRepository;
+import fr.endide.application.data.service.StudentService;
 import fr.endide.application.views.avis.AvisView;
 import fr.endide.application.views.chat.ChatView;
 import fr.endide.application.views.conseildeclasse.ConseilDeClasseView;
 import fr.endide.application.views.eleves.ElevesView;
 import fr.endide.application.views.moncompte.MonCompteView;
-;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+;import java.io.ByteArrayInputStream;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -30,8 +41,8 @@ public class MainLayout extends AppLayout {
     public static class MenuItemInfo extends ListItem {
 
         private final Class<? extends Component> view;
-
         public MenuItemInfo(String menuTitle, String iconClass, Class<? extends Component> view) {
+
             this.view = view;
             RouterLink link = new RouterLink();
             // Use Lumo classnames for various styling
@@ -68,8 +79,11 @@ public class MainLayout extends AppLayout {
     }
 
     private AccessAnnotationChecker accessChecker;
-
-    public MainLayout(AccessAnnotationChecker accessChecker) {
+    StudentService service;
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentPrincipalName = authentication.getName();
+    public MainLayout(AccessAnnotationChecker accessChecker, StudentService service) {
+        this.service = service;
         this.accessChecker = accessChecker;
 
         addToNavbar(createHeaderContent());
@@ -86,6 +100,32 @@ public class MainLayout extends AppLayout {
         H1 appName = new H1("SchoolCompanion");
         appName.addClassNames("my-m", "me-auto", "text-l");
         layout.add(appName);
+        Student student = service.getByEmail(currentPrincipalName);
+
+            Avatar avatar = new Avatar(student.getFirstName() + " " + student.getLastName());
+            StreamResource resource = new StreamResource("profile-pic",
+                    () -> new ByteArrayInputStream(student.getProfilePicture()));
+            avatar.setImageResource(resource);
+            avatar.setThemeName("xsmall");
+            avatar.getElement().setAttribute("tabindex", "-1");
+
+            MenuBar userMenu = new MenuBar();
+            userMenu.setThemeName("tertiary-inline contrast");
+            MenuItem userName = userMenu.addItem("");
+            Div div = new Div();
+            div.add(avatar);
+            div.add(student.getFirstName() + " " + student.getLastName());
+            div.add(new Icon("lumo", "dropdown"));
+            div.getElement().getStyle().set("display", "flex");
+            div.getElement().getStyle().set("align-items", "center");
+            div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
+            userName.add(div);
+            userName.getSubMenu().addItem("Sign out", e -> {
+                securityService.logout();
+            });
+
+            layout.add(userMenu);
+
 
         Nav nav = new Nav();
         nav.addClassNames("flex", "overflow-auto", "px-m", "py-xs");

@@ -32,7 +32,7 @@ public class ChatView extends VerticalLayout {
     String currentPrincipalName = authentication.getName();
 
     @Autowired
-    public ChatView() {
+    public ChatView(StudentRepository repository){
         addClassName("chat-view");
         setSpacing(false);
         Student student = repository.findByEmail(currentPrincipalName);

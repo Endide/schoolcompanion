@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, UUID> {
     Student findByEmail(String email);
-    Student removeStudentByEmail(String email);
+    void removeStudentByEmail(String email);
+    boolean existsStudentByEmail(String email);
 }
 
