@@ -9,7 +9,6 @@ public class Cards extends AbstractEntity{
     String email;
     String name;
     String description;
-    String link;
     public String getEmail() {
         return email;
     }
@@ -27,12 +26,6 @@ public class Cards extends AbstractEntity{
     }
     public void setDescription(String description) {
         this.description = description;
-    }
-    public String getLink() {
-        return link;
-    }
-    public void setLink(String link) {
-        this.link = link;
     }
 
 }

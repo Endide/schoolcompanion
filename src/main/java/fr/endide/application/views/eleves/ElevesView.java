@@ -109,7 +109,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
                     newStudent.setFirstName(firstName.getValue());
                     newStudent.setLastName(lastName.getValue());
                     newStudent.setEmail(email.getValue());
-                    newStudent.setRoles("ROLE_USER");
+                    newStudent.setRoles("USER");
                     newStudent.setSchoolLevel(currentStudent.getSchoolLevel());
                     newStudent.setProfilePicture(null);
                     String key = passwordGenerator.generateRandomSpecialCharacters(10);

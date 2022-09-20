@@ -1,6 +1,8 @@
 package fr.endide.application.data.manager;
 
+import fr.endide.application.data.entity.Cards;
 import fr.endide.application.data.entity.Student;
+import fr.endide.application.data.service.CardRepository;
 import fr.endide.application.data.service.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -10,10 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataInit implements ApplicationRunner {
     StudentRepository repository;
-
+    CardRepository cardRepository;
     @Autowired
-    public DataInit(StudentRepository repository) {
+    public DataInit(StudentRepository repository, CardRepository cardRepository) {
         this.repository = repository;
+        this.cardRepository = cardRepository;
     }
 
     @Override
@@ -28,6 +31,11 @@ public class DataInit implements ApplicationRunner {
             student.setHashedPassword("$2a$12$QkcsWXBzjfXn/x/vmkudceaYOu2YBFcpRuXubIPd6iJFamHNEJNki");
             student.setRoles("ADMIN");
             repository.save(student);
+            Cards cards = new Cards();
+            cards.setName("Trimestre 1");
+            cards.setDescription("Un eleve serieux mais avec un manque de participation");
+            cards.setEmail("admin@schoolcompanion.com");
+            cardRepository.save(cards);
         }
     }
 }

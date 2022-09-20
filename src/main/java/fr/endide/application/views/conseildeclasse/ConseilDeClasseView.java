@@ -1,5 +1,7 @@
 package fr.endide.application.views.conseildeclasse;
 
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
@@ -15,9 +17,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import fr.endide.application.data.entity.Cards;
 import fr.endide.application.data.service.CardRepository;
+import fr.endide.application.data.service.CardService;
 import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.views.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,9 +35,12 @@ import javax.annotation.security.RolesAllowed;
 public class ConseilDeClasseView extends Div implements AfterNavigationObserver {
 
     Grid<Cards> grid = new Grid<>();
-    CardRepository repository;
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentPrincipalName = authentication.getName();
+    CardService repository;
     @Autowired
-    public ConseilDeClasseView(CardRepository repository) {
+    public ConseilDeClasseView(CardService repository) {
         this.repository = repository;
         addClassName("conseil-de-classe-view");
         setSizeFull();
@@ -60,22 +68,21 @@ public class ConseilDeClasseView extends Div implements AfterNavigationObserver 
 
         Span name = new Span(cards.getName());
         name.addClassName("name");
-
+        header.add(name);
         HorizontalLayout actions = new HorizontalLayout();
         actions.addClassName("actions");
         actions.setSpacing(false);
         actions.getThemeList().add("spacing-s");
+        Text description1 = new Text(cards.getDescription());
+        actions.add(description1);
 
-        Icon likeIcon = VaadinIcon.DOWNLOAD.create();
-        likeIcon.addClassName("icon");
-        return null;
+        description.add(header, actions);
+        card.add(description);
+        return card;
     }
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        Cards cards = repository.findByEmail("admin@schoolcompanion.com");
-        // Set some data when this view is displayed.
-        List<Cards> cardsList = new ArrayList<>();
-        cardsList.add(cards);
+        List<Cards> cardsList = repository.getAllByEmail(currentPrincipalName);
         grid.setItems(cardsList);
     }
 

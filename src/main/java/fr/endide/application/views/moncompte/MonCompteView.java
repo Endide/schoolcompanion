@@ -21,10 +21,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.service.StudentRepository;
+import fr.endide.application.data.service.StudentService;
 import fr.endide.application.views.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -42,7 +44,7 @@ public class MonCompteView extends Div {
     private PasswordField repassword = new PasswordField("Retaper le Mot de Passe");
     private Button save = new Button("Save");
 
-    StudentRepository repository;
+    StudentRepository service;
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String currentPrincipalName = authentication.getName();
 
@@ -52,21 +54,29 @@ public class MonCompteView extends Div {
         return new H3("Mon compte : " + currentPrincipalName);
     }
     @Autowired
-    public MonCompteView(StudentRepository repository){
-        this.repository = repository;
-        Student student = repository.findByEmail(currentPrincipalName);
+    public MonCompteView(StudentRepository service){
+        addClassName("mon-compte-view");
+        this.service = service;
+        Student student = service.findByEmail(currentPrincipalName);
         firstName.setValue(student.getFirstName());
         lastName.setValue(student.getLastName());
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.addClassName("button-layout");
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        student.setFirstName(firstName.getValue());
-        student.setLastName(lastName.getValue());
         save.addClickListener(event -> {
-            System.out.println(firstName.getValue());
-            repository.save(student);
+            if(!password.isEmpty() || !repassword.isEmpty()) {
+                if(password.getValue().equals(repassword.getValue())) {
+                    student.setHashedPassword(new BCryptPasswordEncoder().encode(password.getValue()));
+                } else {
+                    Notification.show("Les mots de passe ne correspondent pas");
+                }
+            }
+            student.setFirstName(firstName.getValue());
+            student.setLastName(lastName.getValue());
+            service.save(student);
             Notification.show("Saved");
         });
+
         buttonLayout.add(save);
         add(createTitle(), createFormLayout(), buttonLayout);
     }
@@ -74,6 +84,12 @@ public class MonCompteView extends Div {
 
     private Component createFormLayout() {
         FormLayout formLayout = new FormLayout();
+        formLayout.setResponsiveSteps(
+                // Use one column by default
+                new FormLayout.ResponsiveStep("0", 1),
+                // Use two columns, if layout's width exceeds 500px
+                new FormLayout.ResponsiveStep("500px", 2)
+        );
         formLayout.add(firstName, lastName, password, repassword);
         return formLayout;
     }

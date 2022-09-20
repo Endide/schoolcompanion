@@ -1,8 +1,10 @@
 package fr.endide.application.views;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Div;
@@ -13,13 +15,17 @@ import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+import com.vaadin.flow.theme.lumo.Lumo;
 import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.data.service.StudentService;
+import fr.endide.application.security.SecurityService;
 import fr.endide.application.views.avis.AvisView;
 import fr.endide.application.views.chat.ChatView;
 import fr.endide.application.views.conseildeclasse.ConseilDeClasseView;
@@ -103,9 +109,6 @@ public class MainLayout extends AppLayout {
         Student student = service.getByEmail(currentPrincipalName);
 
             Avatar avatar = new Avatar(student.getFirstName() + " " + student.getLastName());
-            StreamResource resource = new StreamResource("profile-pic",
-                    () -> new ByteArrayInputStream(student.getProfilePicture()));
-            avatar.setImageResource(resource);
             avatar.setThemeName("xsmall");
             avatar.getElement().setAttribute("tabindex", "-1");
 
@@ -121,10 +124,18 @@ public class MainLayout extends AppLayout {
             div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
             userName.add(div);
             userName.getSubMenu().addItem("Sign out", e -> {
-                securityService.logout();
+                SecurityService.logout();
             });
+        Button toggleButton = new Button(new Icon(VaadinIcon.MOON), click -> {
+            ThemeList themeList = UI.getCurrent().getElement().getThemeList();
 
-            layout.add(userMenu);
+            if (themeList.contains(Lumo.DARK)) {
+                themeList.remove(Lumo.DARK);
+            } else {
+                themeList.add(Lumo.DARK);
+            }
+        });
+            layout.add(toggleButton, userMenu);
 
 
         Nav nav = new Nav();
@@ -150,9 +161,9 @@ public class MainLayout extends AppLayout {
         return new MenuItemInfo[]{ //
                 new MenuItemInfo("Chat", "la la-comments", ChatView.class), //
 
-                new MenuItemInfo("Conseil De Classe", "la la-list", ConseilDeClasseView.class), //
-
                 new MenuItemInfo("Avis", "la la-paper-plane", AvisView.class), //
+
+                new MenuItemInfo("Conseil De Classe", "la la-list", ConseilDeClasseView.class), //
 
                 new MenuItemInfo("Mon Compte", "la la-user", MonCompteView.class), //
 

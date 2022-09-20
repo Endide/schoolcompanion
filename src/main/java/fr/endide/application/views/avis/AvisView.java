@@ -1,5 +1,7 @@
 package fr.endide.application.views.avis;
 
+import com.vaadin.collaborationengine.CollaborationMessageList;
+import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -11,7 +13,13 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import fr.endide.application.data.entity.Student;
+import fr.endide.application.data.message.MessagePersister;
+import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.views.MainLayout;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -24,23 +32,26 @@ public class AvisView extends Div {
     private Button send = new Button("Envoyer");
 
     private Component createTitle() {
-        return new H3("Personal information");
+        return new H3("Envoyer un avis");
     }
-    public AvisView(){
-
-        add(createTitle(), createFormLayout(), createButtonLayout());
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentPrincipalName = authentication.getName();
+    StudentRepository repository;
+    @Autowired
+    public AvisView(StudentRepository repository, MessagePersister persister) {
+        this.repository = repository;
+        addClassName("avis-view");
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.addClassName("button-layout");
+        send.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        send.addClickListener(click -> {
+        });
+        buttonLayout.add(send);
+        add(createTitle(), createFormLayout(), buttonLayout);
     }
     private Component createFormLayout() {
         FormLayout formLayout = new FormLayout();
         formLayout.add(question, topic);
         return formLayout;
-    }
-
-    private Component createButtonLayout() {
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.addClassName("button-layout");
-        send.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(send);
-        return buttonLayout;
     }
 }
