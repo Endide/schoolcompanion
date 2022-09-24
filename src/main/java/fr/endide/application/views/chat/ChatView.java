@@ -9,8 +9,6 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.theme.Theme;
-import com.vaadin.flow.theme.lumo.Lumo;
 import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.message.MessagePersister;
 import fr.endide.application.data.service.MessageRepository;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
 
 @PageTitle("Chat")

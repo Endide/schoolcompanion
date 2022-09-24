@@ -11,5 +11,6 @@ public interface CardRepository extends JpaRepository<Cards, UUID> {
     Cards findByEmail(String email);
     void removeCardsByEmail(String email);
     List<Cards> findAllByEmail(String email);
+
 }
 

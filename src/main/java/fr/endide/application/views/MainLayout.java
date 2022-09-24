@@ -34,7 +34,7 @@ import fr.endide.application.views.moncompte.MonCompteView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-;import java.io.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 
 /**
  * The main view is a top-level placeholder for other views.
