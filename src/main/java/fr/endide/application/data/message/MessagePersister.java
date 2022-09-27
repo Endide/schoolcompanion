@@ -9,7 +9,6 @@ import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.service.MessageService;
 import fr.endide.application.data.service.StudentService;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Stream;
 
