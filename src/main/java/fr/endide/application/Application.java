@@ -1,15 +1,15 @@
 package fr.endide.application;
 
+import com.vaadin.collaborationengine.CollaborationEngineConfiguration;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
-import fr.endide.application.data.service.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 
 /**
  * The entry point of the Spring Boot application.
@@ -24,11 +24,18 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 @Push
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 public class Application implements AppShellConfigurator {
-    @Autowired
-    private StudentRepository repository;
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
 
     }
+    @Bean
+    public CollaborationEngineConfiguration ceConfigBean() {
+    CollaborationEngineConfiguration configuration = new CollaborationEngineConfiguration(
+            licenseEvent -> {
+                // See <<ce.production.license-events>>
+            });
+    configuration.setDataDir("vaadin/");
+    return configuration;
+}
 
 }

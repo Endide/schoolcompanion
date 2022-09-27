@@ -1,11 +1,8 @@
 package fr.endide.application.views.avis;
 
-import com.vaadin.collaborationengine.CollaborationMessageList;
-import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
@@ -13,7 +10,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.message.MessagePersister;
 import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.views.MainLayout;

@@ -19,11 +19,9 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.Lumo;
 import fr.endide.application.data.entity.Student;
-import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.data.service.StudentService;
 import fr.endide.application.security.SecurityService;
 import fr.endide.application.views.avis.AvisView;
@@ -31,10 +29,8 @@ import fr.endide.application.views.chat.ChatView;
 import fr.endide.application.views.conseildeclasse.ConseilDeClasseView;
 import fr.endide.application.views.eleves.ElevesView;
 import fr.endide.application.views.moncompte.MonCompteView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import java.io.ByteArrayInputStream;
 
 /**
  * The main view is a top-level placeholder for other views.

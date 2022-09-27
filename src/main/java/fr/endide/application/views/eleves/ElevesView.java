@@ -21,13 +21,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.generator.passwordGenerator;
-import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.data.service.StudentService;
 import fr.endide.application.mail.mailManager;
 import fr.endide.application.views.MainLayout;
 import java.util.Optional;
 import java.util.UUID;
-import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.mail.EmailException;
@@ -43,7 +41,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class ElevesView extends Div implements BeforeEnterObserver {
 
     private final String STUDENT_ID = "studentID";
-    private final String STUDENT_EDIT_ROUTE_TEMPLATE = "eleves/%s/edit";
 
     private Grid<Student> grid = new Grid<>(Student.class, false);
 
