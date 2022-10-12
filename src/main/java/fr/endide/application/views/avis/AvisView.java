@@ -10,7 +10,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import fr.endide.application.data.message.MessagePersister;
 import fr.endide.application.data.service.StudentRepository;
 import fr.endide.application.views.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class AvisView extends Div {
     String currentPrincipalName = authentication.getName();
     StudentRepository repository;
     @Autowired
-    public AvisView(StudentRepository repository, MessagePersister persister) {
+    public AvisView(StudentRepository repository) {
         this.repository = repository;
         addClassName("avis-view");
         HorizontalLayout buttonLayout = new HorizontalLayout();

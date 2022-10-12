@@ -25,7 +25,6 @@ import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.service.StudentService;
 import fr.endide.application.security.SecurityService;
 import fr.endide.application.views.avis.AvisView;
-import fr.endide.application.views.chat.ChatView;
 import fr.endide.application.views.conseildeclasse.ConseilDeClasseView;
 import fr.endide.application.views.eleves.ElevesView;
 import fr.endide.application.views.moncompte.MonCompteView;
@@ -155,7 +154,6 @@ public class MainLayout extends AppLayout {
 
     private MenuItemInfo[] createMenuItems() {
         return new MenuItemInfo[]{ //
-                new MenuItemInfo("Chat", "la la-comments", ChatView.class), //
 
                 new MenuItemInfo("Avis", "la la-paper-plane", AvisView.class), //
 
