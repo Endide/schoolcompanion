@@ -9,4 +9,4 @@ Il utilise spring boot avec un sur-couche Vaadin. Les fonctionalité actuelle so
 - Mon compte (Fini)
 - Eleves (Fini)
 
-Pour ce qui est des license vous pouvez faire ce que vous pouvez normalement faire ce que vous voulez
+Pour ce qui est des license vous pouvez normalement faire ce que vous voulez
