@@ -4,7 +4,7 @@
 SchoolCompanion est un cms pour les délégués je met a disposition le code source pour celui ou celle qui voudrait le finir.
 Il utilise spring boot avec un sur-couche Vaadin. Les fonctionalité actuelle sont :
 - Chat (absent du dernier commit car il utilise le "Engine Collaboration de Vaadin" qui est beaucoup trop cher pour l'utilité actuelle)
-- Avis (FrontEnd terminéer il reste tout le backend)
+- Avis (FrontEnd terminée il reste tout le backend)
 - Conseil de classe (il reste le panel admin a faire)
 - Mon compte (Fini)
 - Eleves (Fini)
