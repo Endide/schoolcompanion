@@ -1,11 +1,17 @@
 package fr.endide.application.data.generator;
 
-import org.apache.commons.text.RandomStringGenerator;
+import java.security.SecureRandom;
 
 public class passwordGenerator {
-    public static String generateRandomSpecialCharacters(int length) {
-        RandomStringGenerator pwdGenerator = new RandomStringGenerator.Builder().withinRange(33, 45)
-                .build();
-        return pwdGenerator.generate(length);
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static SecureRandom rnd = new SecureRandom();
+
+    public static String generateRandomSpecialCharacters(int len) {
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
+
     }
+
 }

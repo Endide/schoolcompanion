@@ -25,9 +25,14 @@ import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.service.StudentService;
 import fr.endide.application.security.SecurityService;
 import fr.endide.application.views.avis.AvisView;
+import fr.endide.application.views.chat.ChatView;
+import fr.endide.application.views.compterendu.CompteRenduView;
 import fr.endide.application.views.conseildeclasse.ConseilDeClasseView;
 import fr.endide.application.views.eleves.ElevesView;
 import fr.endide.application.views.moncompte.MonCompteView;
+
+import java.awt.Menu;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -154,7 +159,8 @@ public class MainLayout extends AppLayout {
 
     private MenuItemInfo[] createMenuItems() {
         return new MenuItemInfo[]{ //
-
+                new MenuItemInfo("Chat", "la la-paper-plane", ChatView.class), //
+                
                 new MenuItemInfo("Avis", "la la-paper-plane", AvisView.class), //
 
                 new MenuItemInfo("Conseil De Classe", "la la-list", ConseilDeClasseView.class), //
@@ -162,6 +168,8 @@ public class MainLayout extends AppLayout {
                 new MenuItemInfo("Mon Compte", "la la-user", MonCompteView.class), //
 
                 new MenuItemInfo("Eleves", "la la-universal-access", ElevesView.class), //
+                                                                                        
+                new MenuItemInfo("Compte Rendu Conseil de Classe", "la la-universal-access", CompteRenduView.class),
 
         };
     }

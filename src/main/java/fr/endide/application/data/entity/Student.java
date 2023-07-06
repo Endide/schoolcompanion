@@ -2,8 +2,16 @@ package fr.endide.application.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import fr.endide.application.data.converter.StringListConverter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
@@ -22,6 +30,10 @@ public class Student extends AbstractEntity {
     @Lob
     @Column(length = 1000000)
     private byte[] profilePicture;
+
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    private List<String> topicsJoined = new ArrayList<String>();
+
 
     public String getUsername() {
         return username;
@@ -71,5 +83,10 @@ public class Student extends AbstractEntity {
     public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
     }
-
+    public List<String> getTopicsJoined(){
+        return topicsJoined;
+    }
+    public void setTopicsJoined(List<String> topicsJoined){
+        this.topicsJoined = topicsJoined;
+    }
 }

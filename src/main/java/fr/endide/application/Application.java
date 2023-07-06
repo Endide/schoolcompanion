@@ -28,14 +28,15 @@ public class Application implements AppShellConfigurator {
         SpringApplication.run(Application.class, args);
 
     }
+
     @Bean
     public CollaborationEngineConfiguration ceConfigBean() {
-    CollaborationEngineConfiguration configuration = new CollaborationEngineConfiguration(
-            licenseEvent -> {
-                // See <<ce.production.license-events>>
-            });
-    configuration.setDataDir("vaadin/");
-    return configuration;
-}
+        CollaborationEngineConfiguration configuration = new CollaborationEngineConfiguration(
+                licenseEvent -> {
+                    // See <<ce.production.license-events>>
+                });
+        configuration.setDataDir("vaadin/");
+        return configuration;
+    }
 
 }

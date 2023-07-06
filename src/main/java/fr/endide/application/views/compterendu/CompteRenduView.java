@@ -1,4 +1,4 @@
-package fr.endide.application.views.eleves;
+package fr.endide.application.views.compterendu;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -13,43 +13,33 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+
+import fr.endide.application.data.entity.Cards;
 import fr.endide.application.data.entity.Student;
-import fr.endide.application.data.generator.passwordGenerator;
+import fr.endide.application.data.service.CardService;
 import fr.endide.application.data.service.StudentService;
-import fr.endide.application.mail.mailManager;
 import fr.endide.application.views.MainLayout;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
 
-import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@PageTitle("Eleves")
-@Route(value = "eleves/:studentID?/:action?(edit)", layout = MainLayout.class)
+@PageTitle("Conseil de classe Admin")
+@Route(value = "compterendu/:studentID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
-public class ElevesView extends Div implements BeforeEnterObserver {
+public class CompteRenduView extends Div implements BeforeEnterObserver {
 
     private final String STUDENT_ID = "studentID";
 
     private Grid<Student> grid = new Grid<>(Student.class, false);
-
-    private TextField username;
-    private TextField firstName;
-    private TextField lastName;
-    private TextField email;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Create");
@@ -58,11 +48,20 @@ public class ElevesView extends Div implements BeforeEnterObserver {
 
     private Student student;
 
+    private TextField email;
+    private TextField title;
+    private TextField text;
+
+    HorizontalLayout selectedCards;
+
     private final StudentService studentService;
 
+    private final CardService cardService;
+
     @Autowired
-    public ElevesView(StudentService studentService) {
+    public CompteRenduView(StudentService studentService, CardService cardService) {
         this.studentService = studentService;
+        this.cardService = cardService;
         addClassNames("eleves-view");
 
         // Create UI
@@ -70,7 +69,6 @@ public class ElevesView extends Div implements BeforeEnterObserver {
 
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
-
         add(splitLayout);
 
         // Configure Grid
@@ -97,37 +95,18 @@ public class ElevesView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (studentService.exists(email.getValue())) {
-                    Notification.show("L'adresse email est déjà utilisée");
-                }else {
-                    Student newStudent = new Student();
-                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                    String currentPrincipalName = authentication.getName();
-                    Student currentStudent = studentService.getByEmail(currentPrincipalName);
-                    newStudent.setUsername(username.getValue());
-                    newStudent.setFirstName(firstName.getValue());
-                    newStudent.setLastName(lastName.getValue());
-                    newStudent.setEmail(email.getValue());
-                    newStudent.setRoles("USER");
-                    newStudent.setSchoolLevel(currentStudent.getSchoolLevel());
-                    newStudent.setProfilePicture(null);
-                    String key = passwordGenerator.generateRandomSpecialCharacters(10);
-                    newStudent.setHashedPassword(new BCryptPasswordEncoder().encode(key));
-                    try {
-                        mailManager.sendMessage(key, email.getValue());
-                    } catch (EmailException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    studentService.update(newStudent);
-                    binder.writeBean(newStudent);
-                    clearForm();
-                    refreshGrid();
-                    Notification.show("Eleves créer un mail avec son mot de passe est " + key);
-                    UI.getCurrent().navigate(ElevesView.class);
-                }
-                } catch (ValidationException validationException) {
-                Notification.show("ERROR.");
+                Cards card = new Cards();
+                card.setName(title.getValue());
+                card.setEmail(email.getValue());
+                card.setDescription(text.getValue());
+                cardService.update(card);
+                Notification.show("Le compte rendu a bien été ajouté");
+                UI.getCurrent().navigate(CompteRenduView.class);
+
+            } finally {
+
             }
+
         });
 
     }
@@ -145,7 +124,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
                 // when a row is selected but the data is no longer available,
                 // refresh grid
                 refreshGrid();
-                event.forwardTo(ElevesView.class);
+                event.forwardTo(CompteRenduView.class);
             }
         }
     }
@@ -154,16 +133,17 @@ public class ElevesView extends Div implements BeforeEnterObserver {
         Div editorLayoutDiv = new Div();
         editorLayoutDiv.setClassName("editor-layout");
 
+        selectedCards = new HorizontalLayout();
+
         Div editorDiv = new Div();
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        username = new TextField("Username");
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
         email = new TextField("Email");
-        Component[] fields = new Component[]{username, firstName, lastName, email};
+        title = new TextField("Titre");
+        text = new TextField("Compte Rendu");
+        Component[] fields = new Component[] { email, title, text };
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -171,6 +151,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
 
         splitLayout.addToSecondary(editorLayoutDiv);
     }
+
     private void createButtonLayout(Div editorLayoutDiv) {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
