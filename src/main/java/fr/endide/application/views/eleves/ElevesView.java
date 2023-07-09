@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -14,10 +15,12 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.selection.SingleSelect;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import fr.endide.application.data.entity.Student;
 import fr.endide.application.data.generator.passwordGenerator;
@@ -46,13 +49,13 @@ public class ElevesView extends Div implements BeforeEnterObserver {
 
     private Grid<Student> grid = new Grid<>(Student.class, false);
 
-    private TextField username;
     private TextField firstName;
     private TextField lastName;
     private TextField email;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Create");
+    private Button delete = new Button("Delete");
 
     private BeanValidationBinder<Student> binder;
 
@@ -74,7 +77,6 @@ public class ElevesView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("username").setAutoWidth(true);
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
@@ -90,6 +92,23 @@ public class ElevesView extends Div implements BeforeEnterObserver {
 
         binder.bindInstanceFields(this);
 
+        delete.addClickListener(e -> {
+           
+                if (!studentService.exists(email.getValue())) {
+                    Notification.show("Vous devez selectionner un utilisateur.");
+                }else {
+                    Student selectedStudent = studentService.getByEmail(email.getValue());
+                    if(selectedStudent.getEmail().equals("admin@schoolcompanion.com")){
+                        Notification.show("Vous ne pouvez pas supprimer un compte admin");
+                        
+                    }else{
+                        studentService.delete(selectedStudent.getId());
+                        Notification.show("Utilisateur suprimer");
+                        UI.getCurrent().navigate(ElevesView.class);
+                    }
+                }
+        });
+
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
@@ -103,8 +122,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
                     Student newStudent = new Student();
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     String currentPrincipalName = authentication.getName();
-                    Student currentStudent = studentService.getByEmail(currentPrincipalName);
-                    newStudent.setUsername(username.getValue());
+                    Student currentStudent = studentService.getByEmail(currentPrincipalName); 
                     newStudent.setFirstName(firstName.getValue());
                     newStudent.setLastName(lastName.getValue());
                     newStudent.setEmail(email.getValue());
@@ -129,7 +147,11 @@ public class ElevesView extends Div implements BeforeEnterObserver {
                 Notification.show("ERROR.");
             }
         });
-
+        grid.setSelectionMode(SelectionMode.SINGLE);
+        SingleSelect<Grid<Student>, Student> personSelect = grid.asSingleSelect();
+        personSelect.addValueChangeListener(e -> {
+            populateForm(e.getValue());
+        });
     }
 
     @Override
@@ -159,11 +181,10 @@ public class ElevesView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        username = new TextField("Username");
         firstName = new TextField("First Name");
         lastName = new TextField("Last Name");
         email = new TextField("Email");
-        Component[] fields = new Component[]{username, firstName, lastName, email};
+        Component[] fields = new Component[]{firstName, lastName, email};
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -176,7 +197,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        buttonLayout.add(save, cancel, delete);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -184,7 +205,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
         Div wrapper = new Div();
         wrapper.setClassName("grid-wrapper");
         splitLayout.addToPrimary(wrapper);
-        wrapper.add(grid);
+        wrapper.add(grid); 
     }
 
     private void refreshGrid() {

@@ -72,7 +72,6 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("username").setAutoWidth(true);
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
@@ -87,7 +86,7 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         // Bind fields. This is where you'd define e.g. validation rules
 
         binder.bindInstanceFields(this);
-
+        email.setEnabled(false);
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
@@ -122,7 +121,7 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
                 Notification.show(String.format("The requested student was not found, ID = %s", studentId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
-                // refresh grid
+                // refresh grid099d35a0-a2aa-4360-a920-5aed278cd664
                 refreshGrid();
                 event.forwardTo(CompteRenduView.class);
             }

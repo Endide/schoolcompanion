@@ -19,7 +19,6 @@ import javax.persistence.Table;
 @Table(name = "students")
 public class Student extends AbstractEntity {
 
-    private String username;
     private String firstName;
     private String lastName;
     private String email;
@@ -35,12 +34,7 @@ public class Student extends AbstractEntity {
     private List<String> topicsJoined = new ArrayList<String>();
 
 
-    public String getUsername() {
-        return username;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    
     public String getFirstName() {
         return firstName;
     }

@@ -159,7 +159,7 @@ public class MainLayout extends AppLayout {
 
     private MenuItemInfo[] createMenuItems() {
         return new MenuItemInfo[]{ //
-                new MenuItemInfo("Chat", "la la-paper-plane", ChatView.class), //
+                new MenuItemInfo("Chat", "la la-comment", ChatView.class), //
                 
                 new MenuItemInfo("Avis", "la la-paper-plane", AvisView.class), //
 

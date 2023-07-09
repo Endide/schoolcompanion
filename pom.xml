@@ -11,7 +11,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <vaadin.version>23.2.0</vaadin.version>
+        <vaadin.version>23.3.0</vaadin.version>
         <selenium.version>4.4.0</selenium.version>
     </properties>
 
@@ -97,6 +97,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons.tatu</groupId>
+            <artifactId>tabsheet</artifactId>
+            <version>1.8.2</version>
+        </dependency>
+
 
         <dependency>
             <groupId>com.h2database</groupId>

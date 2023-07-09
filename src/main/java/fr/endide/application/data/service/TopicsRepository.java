@@ -12,7 +12,6 @@ import fr.endide.application.data.entity.Topics;
 public interface TopicsRepository extends JpaRepository<Topics, UUID> {
     List<Topics> findAll();
 
-    void removeTopicsById(String name);
 
     Topics getTopicsById(String name);
 

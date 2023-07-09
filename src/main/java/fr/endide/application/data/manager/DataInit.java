@@ -27,7 +27,6 @@ public class DataInit implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         if (repository.count() == 0) {
             Student student = new Student();
-            student.setUsername("admin");
             student.setFirstName("FirstAdmin");
             student.setLastName("LastAdmin");
             student.setEmail("admin@schoolcompanion.com");

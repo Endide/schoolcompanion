@@ -27,7 +27,9 @@ public class TopicsService {
     public Topics update(Topics topics) {
         return topicsRepository.save(topics);
     }
-
+    public void remove(Topics topics){
+        topicsRepository.delete(topics);
+    }
     public List<Topics> getAllByUser(String email) {
         return new ArrayList<Topics>();
     }

@@ -32,19 +32,22 @@ import javax.annotation.security.RolesAllowed;
 
 @PageTitle("Avis")
 @Route(value = "avis", layout = MainLayout.class)
-@RolesAllowed({"ADMIN","USER"})
+@RolesAllowed({ "ADMIN", "USER" })
 public class AvisView extends Div {
     private TextField question = new TextField("Votre Question ?");
     private TextField topic = new TextField("Nom du topic :");
     private Button send = new Button("Envoyer");
+    private H3 title = new H3("Poser une question a vos délégués");
 
     private Component createTitle() {
-        return new H3("Envoyer un avis");
+        return title;
     }
+
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String currentPrincipalName = authentication.getName();
     StudentRepository repository;
     TopicsRepository topicsRepository;
+
     @Autowired
     public AvisView(StudentRepository repository, TopicsRepository topicsRepository) {
         this.repository = repository;
@@ -54,7 +57,7 @@ public class AvisView extends Div {
         buttonLayout.addClassName("button-layout");
         send.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         send.addClickListener(click -> {
-            if(!question.isEmpty() && !topic.isEmpty()){
+            if (!question.isEmpty() && !topic.isEmpty()) {
                 Topics newTopic = new Topics();
                 List<Message> messages = new ArrayList<>();
                 Message firstMess = new Message();
@@ -67,21 +70,34 @@ public class AvisView extends Div {
                 newTopic.setMessages(messages);
                 topicsRepository.save(newTopic);
                 Student currentStudent = repository.findByEmail(currentPrincipalName);
-                List<String> topicsjoined = currentStudent.getTopicsJoined(); 
+                List<String> topicsjoined = currentStudent.getTopicsJoined();
                 topicsjoined.add(newTopic.getId().toString());
                 currentStudent.setTopicsJoined(topicsjoined);
                 repository.save(currentStudent);
-                Notification.show("Conversation créer avec succées disponible dans la section Chat");
+                Student adminUser = repository.findByEmail("admin@schoolcompanion.com");
+                List<String> adminTopicsJoined = adminUser.getTopicsJoined();
+                adminTopicsJoined.add(newTopic.getId().toString());
+                adminUser.setTopicsJoined(adminTopicsJoined);
+                repository.save(adminUser);
+                Notification.show("Conversation disponible dans la section Chat");
 
-            }else{
+            } else {
                 Notification.show("Vous n'avez pas remplis tout les champs");
             }
         });
         buttonLayout.add(send);
         add(createTitle(), createFormLayout(), buttonLayout);
     }
+
     private Component createFormLayout() {
         FormLayout formLayout = new FormLayout();
+        if (currentPrincipalName.equals("admin@schoolcompanion.com")) {
+            send.setVisible(false);
+            question.setEnabled(false);
+            topic.setEnabled(false);
+            title.setText(
+                    "Poser une question a vos délégués (vous etes déjà un délégués du coup cette page a été desactiver pour vous)");
+        }
         formLayout.add(question, topic);
         return formLayout;
     }
