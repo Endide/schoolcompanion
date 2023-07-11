@@ -1,18 +1,23 @@
 package fr.endide.application.views.compterendu;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.selection.SingleSelect;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -25,6 +30,7 @@ import fr.endide.application.data.service.CardService;
 import fr.endide.application.data.service.StudentService;
 import fr.endide.application.views.MainLayout;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
@@ -40,6 +46,7 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
     private final String STUDENT_ID = "studentID";
 
     private Grid<Student> grid = new Grid<>(Student.class, false);
+    private Grid<Cards> cardGrid = new Grid<>(Cards.class, false);
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Create");
@@ -83,6 +90,8 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         // Configure Form
         binder = new BeanValidationBinder<>(Student.class);
 
+        cardGrid.addColumn("name").setAutoWidth(true);
+        cardGrid.addColumn("description").setAutoWidth(true);
         // Bind fields. This is where you'd define e.g. validation rules
 
         binder.bindInstanceFields(this);
@@ -106,6 +115,17 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
 
             }
 
+        });
+        grid.setSelectionMode(SelectionMode.SINGLE);
+        SingleSelect<Grid<Student>, Student> personSelect = grid.asSingleSelect();
+        personSelect.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                populateForm(e.getValue());
+                List<Cards> userCards = cardService.getAllByEmail(e.getValue().getEmail());
+                cardGrid.setItems(userCards);
+            } else {
+                clearForm();
+            }
         });
 
     }
@@ -142,7 +162,7 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         email = new TextField("Email");
         title = new TextField("Titre");
         text = new TextField("Compte Rendu");
-        Component[] fields = new Component[] { email, title, text };
+        Component[] fields = new Component[] { email, title, text, cardGrid };
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -174,6 +194,10 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
 
     private void clearForm() {
         populateForm(null);
+    }
+
+    private void createCards() {
+
     }
 
     private void populateForm(Student value) {

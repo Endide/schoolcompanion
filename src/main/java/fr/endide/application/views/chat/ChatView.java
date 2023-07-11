@@ -24,8 +24,10 @@ import com.vaadin.flow.component.messages.MessageList;
 import com.vaadin.flow.component.messages.MessageListItem;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -69,7 +71,6 @@ public class ChatView extends Div {
         for (Topics topic : topicsJoined) {
 
             MessageList messageList = new MessageList();
-            VerticalLayout messageLayout = new VerticalLayout();
             HorizontalLayout inputLayout = new HorizontalLayout();
             List<MessageListItem> preItems = new ArrayList<MessageListItem>();
             for (Message message : topic.getMessages()) {
@@ -97,19 +98,39 @@ public class ChatView extends Div {
                 topicsService.update(topic);
             });
             Button delButton = new Button(new Icon(VaadinIcon.TRASH));
-            delButton.addClickListener(e ->{
-              topicsService.remove(topic);
-              Notification.show("Conversation supprimer avec succés");
-              currentStudent.getTopicsJoined().remove(topic.getId().toString());
-              UI.getCurrent().navigate(ChatView.class);
-            });
-            inputLayout.add(messageInput, delButton);
-            messageLayout.add(messageList, inputLayout);
-            messageLayout.setSizeFull();
-            messageList.setSizeFull();
-            messageInput.setWidthFull();
+            delButton.addClickListener(e -> {
+                topicsService.remove(topic);
+                Notification.show("Conversation supprimer avec succés");
+                // Delete user chat
+                for (String id : currentStudent.getTopicsJoined()) {
+                    if (id.equals(topic.getId().toString())) {
+                        currentStudent.getTopicsJoined().remove(id);
+                        studentService.update(currentStudent);
+                    }
+                }
+                // Delte admin chat
+                Student adminStudent = studentService.getByEmail("admin@schoolcompanion.com");
+                for (String id : adminStudent.getTopicsJoined()) {
+                    if (id.equals(topic.getId().toString())) {
+                        adminStudent.getTopicsJoined().remove(id);
+                        studentService.update(adminStudent);
+                    }
+                }
 
-            topicsTabs.add(topic.getName(), messageLayout);
+                UI.getCurrent().navigate(ChatView.class);
+            });
+            messageInput.setWidth("95%");
+            inputLayout.setWidthFull();
+            inputLayout.add(messageInput, delButton);
+            VerticalLayout tabcontent = new VerticalLayout();
+            tabcontent.setSizeFull();
+            Scroller scroller = new Scroller();
+            scroller.setHeight("95%");
+            messageList.setHeight("95%");
+            scroller.setContent(messageList);
+            tabcontent.expand(scroller);
+            tabcontent.add(scroller, inputLayout);
+            topicsTabs.add(topic.getName(), tabcontent);
         }
 
     }

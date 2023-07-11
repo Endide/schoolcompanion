@@ -35,7 +35,7 @@ public class DataInit implements ApplicationRunner {
             student.setRoles("ADMIN");
             repository.save(student);
             Cards cards = new Cards();
-            cards.setName("Trimestre 1");
+            cards.setName("Trimestre 1 (Test)");
             cards.setDescription("Un eleve serieux mais avec un manque de participation");
             cards.setEmail("admin@schoolcompanion.com");
             cardRepository.save(cards);

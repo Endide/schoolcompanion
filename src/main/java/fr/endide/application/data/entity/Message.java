@@ -2,6 +2,7 @@ package fr.endide.application.data.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -11,6 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "messages")
 public class Message extends AbstractEntity {
+    @Column(length=2000)
     String text;
     String author;
     Date date;
