@@ -13,6 +13,12 @@ Il utilise spring boot avec une sur-couche Vaadin. Le projet a été fini a 100%
 
 Pour plus d'information et des screenshot vous pouvez aller voir sur le site web de [Endide](https://endide.com/schoolcompanion.html)
 
+Pour vous procurez le derniers builds vous pouvez aller [ici](https://build.endide.com/job/SchoolCompanion/)
+### Setup
+- Lancer le .jar
+- rendez vous a http://localhost:31914
+- Email : admin@schoolcompanion.com , Mot de passe : admin
+
 Credits :
 
 - Merci a [Eyko](https://github.com/EyKo-dev) et a [SummerFlamme](https://github.com/summerflamme), ce sont eux qui ont eu cette idée de projet.
