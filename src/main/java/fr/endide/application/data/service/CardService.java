@@ -33,7 +33,9 @@ public class CardService {
         public Cards update(Cards entity) {
             return repository.save(entity);
         }
-
+        public boolean exists(UUID id){
+            return repository.existsById(id);
+        }
         public void delete(UUID id) {
             repository.deleteById(id);
         }

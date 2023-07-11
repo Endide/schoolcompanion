@@ -95,7 +95,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
         delete.addClickListener(e -> {
            
                 if (!studentService.exists(email.getValue())) {
-                    Notification.show("Vous devez selectionner un utilisateur.");
+                    Notification.show("Vous devez sélectionner un utilisateur.");
                 }else {
                     Student selectedStudent = studentService.getByEmail(email.getValue());
                     if(selectedStudent.getEmail().equals("admin@schoolcompanion.com")){
@@ -140,7 +140,7 @@ public class ElevesView extends Div implements BeforeEnterObserver {
                     binder.writeBean(newStudent);
                     clearForm();
                     refreshGrid();
-                    Notification.show("Eleves créer un mail avec son mot de passe est " + key);
+                    Notification.show("L'Élève a été créé et son mot de passe est " + key);
                     UI.getCurrent().navigate(ElevesView.class);
                 }
                 } catch (ValidationException validationException) {

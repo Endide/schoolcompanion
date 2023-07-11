@@ -1,5 +1,6 @@
 package fr.endide.application.data.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -8,6 +9,7 @@ import javax.persistence.Table;
 public class Cards extends AbstractEntity{
     String email;
     String name;
+    @Column(length=2000)
     String description;
     public String getEmail() {
         return email;

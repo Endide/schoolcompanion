@@ -30,13 +30,15 @@ import fr.endide.application.data.service.CardService;
 import fr.endide.application.data.service.StudentService;
 import fr.endide.application.views.MainLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
-
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import com.vaadin.flow.function.SerializableFunction;
 
 @PageTitle("Conseil de classe Admin")
 @Route(value = "compterendu/:studentID?/:action?(edit)", layout = MainLayout.class)
@@ -50,10 +52,12 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Create");
-
+    private Button delete = new Button("Delete");
     private BeanValidationBinder<Student> binder;
 
     private Student student;
+
+    private Student currentStudent;
 
     private TextField email;
     private TextField title;
@@ -62,7 +66,7 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
     HorizontalLayout selectedCards;
 
     private final StudentService studentService;
-
+    private Cards currentCards;
     private final CardService cardService;
 
     @Autowired
@@ -78,6 +82,29 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         createEditorLayout(splitLayout);
         add(splitLayout);
 
+        cardGrid.addColumn(Cards::getName).setHeader("Titre").setAutoWidth(true);
+        cardGrid.addColumn(Cards::getDescription).setHeader("Avis du conseil de classe").setAutoWidth(true);
+
+        cardGrid.setHeight("85%");
+        cardGrid.setSelectionMode(SelectionMode.SINGLE);
+        SingleSelect<Grid<Cards>, Cards> cardSelect = cardGrid.asSingleSelect();
+        cardSelect.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                currentCards = e.getValue();
+            } else {
+                currentCards = null;
+            }
+
+        });
+        delete.addClickListener(e -> {
+            if (cardService.exists(currentCards.getId()) || currentCards != null) {
+                cardService.delete(currentCards.getId());
+                UI.getCurrent().navigate(CompteRenduView.class);
+                populateCardsPreview();
+            } else {
+                Notification.show("Vous n'avez pas selectionner de compte-rendu");
+            }
+        });
         // Configure Grid
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
@@ -90,8 +117,6 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         // Configure Form
         binder = new BeanValidationBinder<>(Student.class);
 
-        cardGrid.addColumn("name").setAutoWidth(true);
-        cardGrid.addColumn("description").setAutoWidth(true);
         // Bind fields. This is where you'd define e.g. validation rules
 
         binder.bindInstanceFields(this);
@@ -108,7 +133,8 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
                 card.setEmail(email.getValue());
                 card.setDescription(text.getValue());
                 cardService.update(card);
-                Notification.show("Le compte rendu a bien été ajouté");
+                Notification.show("Le compte-rendu a bien été ajouté");
+                populateCardsPreview();
                 UI.getCurrent().navigate(CompteRenduView.class);
 
             } finally {
@@ -121,13 +147,23 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         personSelect.addValueChangeListener(e -> {
             if (e.getValue() != null) {
                 populateForm(e.getValue());
-                List<Cards> userCards = cardService.getAllByEmail(e.getValue().getEmail());
-                cardGrid.setItems(userCards);
+                currentStudent = e.getValue();
+                populateCardsPreview();
             } else {
                 clearForm();
+                List<Cards> nulllist = new ArrayList<>();
+                cardGrid.setItems(nulllist);
+                currentStudent = null;
             }
         });
 
+    }
+
+    private void populateCardsPreview() {
+        if (currentStudent != null) {
+            List<Cards> userCards = cardService.getAllByEmail(currentStudent.getEmail());
+            cardGrid.setItems(userCards);
+        }
     }
 
     @Override
@@ -162,10 +198,10 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         email = new TextField("Email");
         title = new TextField("Titre");
         text = new TextField("Compte Rendu");
-        Component[] fields = new Component[] { email, title, text, cardGrid };
+        Component[] fields = new Component[] { email, title, text };
 
         formLayout.add(fields);
-        editorDiv.add(formLayout);
+        editorDiv.add(formLayout, cardGrid);
         createButtonLayout(editorLayoutDiv);
 
         splitLayout.addToSecondary(editorLayoutDiv);
@@ -176,7 +212,7 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        buttonLayout.add(save, cancel, delete);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -194,10 +230,6 @@ public class CompteRenduView extends Div implements BeforeEnterObserver {
 
     private void clearForm() {
         populateForm(null);
-    }
-
-    private void createCards() {
-
     }
 
     private void populateForm(Student value) {

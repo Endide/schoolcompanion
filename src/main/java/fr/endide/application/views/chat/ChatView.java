@@ -100,7 +100,7 @@ public class ChatView extends Div {
             Button delButton = new Button(new Icon(VaadinIcon.TRASH));
             delButton.addClickListener(e -> {
                 topicsService.remove(topic);
-                Notification.show("Conversation supprimer avec succés");
+                Notification.show("Conversation supprimé avec succès");
                 // Delete user chat
                 for (String id : currentStudent.getTopicsJoined()) {
                     if (id.equals(topic.getId().toString())) {
