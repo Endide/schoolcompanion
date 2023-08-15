@@ -19,6 +19,13 @@ Pour vous procurez le derniers builds vous pouvez aller [ici](https://build.endi
 - rendez vous a http://localhost:31914
 - Email : admin@schoolcompanion.com , Mot de passe : admin
 
+### Docker
+- Docker est pris en charge 
+- Exemple : docker run -p 31914:31914 airbnbecoplus/schoolcompanion 
+
+### Demo
+- Une demo est disponible a https://schoolcompanion.endide.com ne changer pas le mdp admin svp
+
 Credits :
 
 - Merci a [Eyko](https://github.com/EyKo-dev) et a [SummerFlamme](https://github.com/summerflamme), ce sont eux qui ont eu cette idée de projet.
