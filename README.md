@@ -23,9 +23,6 @@ Pour vous procurez le derniers builds vous pouvez aller [ici](https://build.endi
 - Docker est pris en charge 
 - Exemple : docker run -p 31914:31914 airbnbecoplus/schoolcompanion 
 
-### Demo
-- Une demo est disponible a https://schoolcompanion.endide.com ne changer pas le mdp admin svp
-
 Credits :
 
 - Merci a [Eyko](https://github.com/EyKo-dev) et a [SummerFlamme](https://github.com/summerflamme), ce sont eux qui ont eu cette idée de projet.
